@@ -1,5 +1,11 @@
 <?php
+
 namespace Kickpeach\Framework\Foundation;
+
+use Kickpeach\Framework\Foundation\Exceptions\HandleExceptions;
+use Kickpeach\Framework\Foundation\Exceptions\Handler;
+use Kickpeach\Framework\surpport\Helpers\Arr;
+
 /**
  * Created by PhpStorm.
  * User: seven
@@ -8,6 +14,14 @@ namespace Kickpeach\Framework\Foundation;
  */
 class Application
 {
+    protected $config = [
+        'environment'   => 'production',
+        'debug'         => false,
+        'Version'     => 'TFramework/1.0',
+        'timezone'      => 'PRC',
+        // 'xhprof_dir'    => __DIR__ . '/../public/xhprof',
+    ];
+
     /**
      *使用框架单例模式，只保存一个Application实例
      */
@@ -66,6 +80,11 @@ class Application
     {
         //异常与错误捕获处理
         $this->handleException();
+        //初始化一些配置
+        $this->initRuntime();
+        //初始化路由
+        $this->initRouter();
+
     }
 
     /**
@@ -73,9 +92,51 @@ class Application
      */
     public function handleException()
     {
+        (new HandleExceptions($this->setExceptionsHandler()))->handle();
 
     }
 
+    /**
+     * 构造异常接管对象
+     */
+    protected function setExceptionsHandler()
+    {
+        return new Handler('', $this->config('Version'));
+    }
+
+    /**
+     * @param null $key
+     * @param null $default
+     * @return mixed
+     * 获取配置文件配置
+     */
+    public function config($key = null, $default = null)
+    {
+        return Arr::get($this->config, $key, $default);
+    }
+
+
+    /**
+     * 初始化一些配置
+     */
+    protected function initRuntime()
+    {
+        mb_internal_encoding('UTF-8');
+
+        header(sprintf("X-Powered-By: %s", $this->config('Version')));
+
+        // 设置中国时区
+        date_default_timezone_set($this->config('timezone'));
+
+    }
+
+    /**
+     * 初始化路由
+     */
+    protected function initRouter()
+    {
+        $this->router = new Router();
+    }
 
 }
 
