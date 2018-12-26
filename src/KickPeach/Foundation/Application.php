@@ -5,6 +5,7 @@ namespace Kickpeach\Framework\Foundation;
 use Kickpeach\Framework\Foundation\Exceptions\HandleExceptions;
 use Kickpeach\Framework\Foundation\Exceptions\Handler;
 use Kickpeach\Framework\surpport\Helpers\Arr;
+use Kickpeach\Framework\Contracts\Application  as ApplicationContracts;
 
 /**
  * Created by PhpStorm.
@@ -12,7 +13,7 @@ use Kickpeach\Framework\surpport\Helpers\Arr;
  * Date: 2018/12/20
  * Time: 19:58
  */
-class Application
+class Application implements ApplicationContracts
 {
     protected $config = [
         'environment'   => 'production',
@@ -42,7 +43,7 @@ class Application
     }
 
     //获得应用单例
-    public function getInstance()
+    public static function getInstance()
     {
         if (is_null(self::$instance)){
             self::$instance = new static();
@@ -130,6 +131,10 @@ class Application
 
     }
 
+    public function handle(){
+
+    }
+
     /**
      * 初始化路由
      */
@@ -138,5 +143,24 @@ class Application
         $this->router = new Router();
     }
 
+    /**
+     * 获取路由
+     *
+     * @return \Tree6bee\Framework\Routing\Router
+     */
+    public function getRouter(){
+
+    }
+
+    /**
+     * 获取路由参数
+     *
+     * @param null $key
+     * @param null $default
+     * @return mixed
+     */
+    public function getAttr($key = null, $default = null){
+
+    }
 }
 
