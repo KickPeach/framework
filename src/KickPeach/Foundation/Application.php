@@ -2,18 +2,20 @@
 
 namespace Kickpeach\Framework\Foundation;
 
+use Kickpeach\Framework\Contracts\MiddlewareProvider;
 use Kickpeach\Framework\Foundation\Exceptions\HandleExceptions;
 use Kickpeach\Framework\Foundation\Exceptions\Handler;
 use Kickpeach\Framework\surpport\Helpers\Arr;
 use Kickpeach\Framework\Contracts\Application  as ApplicationContracts;
-
+use Kickpeach\Framework\Routing\Router;
+use Kickpeach\Framework\Pipeline\Pipeline;
 /**
  * Created by PhpStorm.
  * User: seven
  * Date: 2018/12/20
  * Time: 19:58
  */
-class Application implements ApplicationContracts
+class Application implements ApplicationContracts,MiddlewareProvider
 {
     protected $config = [
         'environment'   => 'production',
@@ -57,22 +59,14 @@ class Application implements ApplicationContracts
     public function run()
     {
         //处理请求
-        $response = $this->handleRequest();
+        $response = $this->handle();
         //响应请求
         $response->send();
     }
 
+    protected $router;
 
-    /**
-     * 处理请求
-     */
-    public function handleRequest()
-    {
-        //框架初始化，做好异常处理以及路由初始化
-        $this->boostrap();
-        //使用中间件过滤请求
-
-    }
+    protected $middleware = [];
 
     /**
      * 框架初始化
@@ -132,8 +126,28 @@ class Application implements ApplicationContracts
     }
 
     public function handle(){
+        //框架初始化，做好异常处理以及路由初始化
+        $this->boostrap();
+        //使用中间件过滤请求
+        $middleware = array_merge($this->middleware,$this->router->getRouteMiddleware());
 
+        return $this->sendThroughPipeline($middleware,function (){
+            return $this->router->execute($this);
+        });
     }
+
+    protected function sendThroughPipeline(array $middleware,\Closure $then)
+    {
+        //如果有中间件，则需要走中间件
+        if (count($middleware)>0){
+            return (new Pipeline($this))
+                ->send($this)
+                ->through($middleware)
+                ->then($then);
+        }
+        return $then();
+    }
+
 
     /**
      * 初始化路由
@@ -149,7 +163,7 @@ class Application implements ApplicationContracts
      * @return \Tree6bee\Framework\Routing\Router
      */
     public function getRouter(){
-
+        return $this->router;
     }
 
     /**
@@ -160,7 +174,18 @@ class Application implements ApplicationContracts
      * @return mixed
      */
     public function getAttr($key = null, $default = null){
+        return $this->router->getAttr($key, $default);
+    }
 
+    /**
+     * @param $middleware
+     * @return mixed
+     * 获取路由中间件
+     */
+    public function getMiddleware($middleware)
+    {
+        $middleware = new $middleware();
+        return $middleware;
     }
 }
 

@@ -10,7 +10,9 @@ namespace Kickpeach\Framework\Routing;
 
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
+use Kickpeach\Framework\Foundation\Response;
 use InvalidArgumentException;
+use Kickpeach\Framework\Foundation\Application;
 use Kickpeach\Framework\surpport\Helpers\Arr;
 use RuntimeException;
 use Kickpeach\Framework\Foundation\Exceptions\HttpException;
@@ -174,7 +176,6 @@ class Router
 
         $this->attr = $args;
 
-
     }
 
     /**
@@ -218,7 +219,42 @@ class Router
 
     protected $attr;
 
+    public function getController()
+    {
+        return $this->controller;
+    }
 
+    public function getAction()
+    {
+        return $this->action;
+    }
 
+    public function getAttr($key = null, $default = null)
+    {
+        return Arr::get($this->attr, $key, $default);
+    }
+
+    /**
+     * 路由中间件
+     * 获取每个控制器定义的路由
+     */
+    public function getRouteMiddleware()
+    {
+        $controller = $this->controller;
+        $controllerMiddle = $controller::getMiddleware($this->action);
+
+        return (array)$controllerMiddle;
+    }
+
+    /**
+     * @param Application $app
+     * 控制器执行方法
+     */
+    public function execute(Application $app)
+    {
+        $controller = $this->controller;
+        $response = (new $controller($app))->{$this->action}();
+        return new Response($response);
+    }
 
 }
