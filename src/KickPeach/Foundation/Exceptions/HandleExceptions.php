@@ -36,7 +36,7 @@ class HandleExceptions
         error_reporting(-1);
 
         //捕获错误
-        set_error_handler(array($this,'hanleError'));
+        set_error_handler(array($this,'handleError'));
 
         //捕获异常
         set_exception_handler(array($this,'handleException'));

@@ -52,12 +52,12 @@ class Logger
         return $logPath.$level.'.log';
     }
 
-    public function getLogPath($dir)
+    protected function getLogPath($dir)
     {
         return $dir.'/'.date('Ym').'/';
     }
 
-    public function getStoragePath()
+    protected function getStoragePath()
     {
         return '/tmp';
     }

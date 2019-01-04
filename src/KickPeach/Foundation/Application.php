@@ -39,7 +39,7 @@ class Application implements ApplicationContracts,MiddlewareProvider
     }
 
     //私有构造函数，防止直接创建对象
-    private function __construct()
+    protected function __construct()
     {
 
     }
