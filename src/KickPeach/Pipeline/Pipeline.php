@@ -19,7 +19,7 @@ class Pipeline
 
     protected $pipes =[];
 
-    protected $method = 'handler';
+    protected $method = 'handle';
 
     public function __construct(MiddlewareProvider $middlewareProvider)
     {
@@ -65,7 +65,7 @@ class Pipeline
                 }elseif (!is_object($pipe)){
                     list($name,$parameters) = $this->parsePipeString($pipe);
                     $pipe = $this->middlewareProvider->getMiddleware($name);
-                    $parameters = array_reverse([$passable,$stack],$parameters);
+                    $parameters = array_merge([$passable,$stack],$parameters);
                 //对象实例
                 }else{
                     $parameters = [$passable,$stack];
