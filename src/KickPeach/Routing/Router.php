@@ -93,6 +93,42 @@ class Router
         return $this;
     }
 
+    public function get($uri,$action)
+    {
+        $this->addRoute('GET',$uri, $action);
+        return $this;
+    }
+
+    public function post($uri,$action)
+    {
+        $this->addRoute('POST',$uri, $action);
+        return $this;
+    }
+
+    public function put($uri,$action)
+    {
+        $this->addRoute('PUT',$uri, $action);
+        return $this;
+    }
+
+    public function delete($uri,$action)
+    {
+        $this->addRoute('DELETE',$uri, $action);
+        return $this;
+    }
+
+    public function options($uri,$action)
+    {
+        $this->addRoute('OPTIONS',$uri, $action);
+        return $this;
+    }
+
+    public function patch($uri,$action)
+    {
+        $this->addRoute('PATCH',$uri, $action);
+        return $this;
+    }
+
     protected function addRoute($method,$uri,$action)
     {
         $uri = '/'.trim($uri,'/');
