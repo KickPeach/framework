@@ -208,7 +208,7 @@ class Router
             sprintf('%s\\%s',ucfirst($var['module']),ucfirst($var['controller']))
         );
 
-        $this->action = $var['action'];
+        $this->action = strtolower($var['action']);
 
         $this->attr = $args;
 
